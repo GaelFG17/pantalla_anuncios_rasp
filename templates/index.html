@@ -1,1 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir Contenido Multimedia</title>
+</head>
+<body>
+    <h1>Subir Imagen o Video</h1>
+
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="position">Selecciona la posición:</label>
+        <select id="position" name="position">
+            <option value="image1">Imagen 1</option>
+            <option value="image2">Imagen 2</option>
+            <option value="video">Video</option>
+        </select>
+        <br><br>
+
+        <label for="fileInput">Selecciona el archivo:</label>
+        <input type="file" id="fileInput" name="fileInput" accept="image/*, video/*" required>
+        <br><br>
+
+        <button type="button" onclick="uploadFile()">Subir</button>
+    </form>
+
+    <script>
+        function uploadFile() {
+            const formData = new FormData();
+            const position = document.getElementById('position').value;
+            const fileInput = document.getElementById('fileInput').files[0];
+
+            if (!fileInput) {
+                alert('Por favor, selecciona un archivo.');
+                return;
+            }
+
+            // Convertir el archivo a base64
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                const base64Data = reader.result.split(',')[1];  // Obtener solo la parte base64
+                const data = {
+                    position: position,
+                    file: base64Data 
+                };
+
+                fetch('/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.message) {
+                        alert(result.message);
+                    } else if (result.error) {
+                        alert(result.error);
+                    }
+                })
+                .catch(error => {
+                    alert('Error al subir el archivo.');
+                    console.error('Error:', error);
+                });
+            };
+            reader.readAsDataURL(fileInput);
+        }
+    </script>
+</body>
+</html>
 
