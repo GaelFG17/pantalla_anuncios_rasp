@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS
 import base64
 
 app = Flask(__name__)
+CORS(app)
 
 media_content = {
     "video": None,  # Base64 del video
@@ -38,4 +40,4 @@ def display():
     return render_template("media.html", media=media_content)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=9999)
