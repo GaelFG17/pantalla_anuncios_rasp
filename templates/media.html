@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            width: 80%;
+            display: grid;
+            grid-template-rows: 2fr 1fr;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .video {
+            grid-column: span 2;
+        }
+        .image {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <h1>Media Display</h1>
+    <div class="container" id="media-container">
+        <!-- Los contenidos multimedia serán cargados aquí -->
+    </div>
+
+    <script>
+        async function fetchMedia() {
+            try {
+                const response = await fetch('/media');
+                const data = await response.json();
+
+                const mediaContainer = document.getElementById('media-container');
+                mediaContainer.innerHTML = '';  // Limpiar el contenedor
+
+                if (data.video) {
+                    const videoElement = document.createElement('video');
+                    videoElement.classList.add('video');
+                    videoElement.controls = true;
+                    videoElement.innerHTML = `<source src="data:video/mp4;base64,${data.video}" type="video/mp4">`;
+                    mediaContainer.appendChild(videoElement);
+                } else {
+                    const noVideoDiv = document.createElement('div');
+                    noVideoDiv.classList.add('video');
+                    noVideoDiv.textContent = 'No video uploaded';
+                    mediaContainer.appendChild(noVideoDiv);
+                }
+
+                if (data.image1) {
+                    const image1 = document.createElement('img');
+                    image1.classList.add('image');
+                    image1.src = `data:image/png;base64,${data.image1}`;
+                    image1.alt = 'Image 1';
+                    mediaContainer.appendChild(image1);
+                } else {
+                    const noImage1Div = document.createElement('div');
+                    noImage1Div.classList.add('image');
+                    noImage1Div.textContent = 'No image 1 uploaded';
+                    mediaContainer.appendChild(noImage1Div);
+                }
+
+                if (data.image2) {
+                    const image2 = document.createElement('img');
+                    image2.classList.add('image');
+                    image2.src = `data:image/png;base64,${data.image2}`;
+                    image2.alt = 'Image 2';
+                    mediaContainer.appendChild(image2);
+                } else {
+                    const noImage2Div = document.createElement('div');
+                    noImage2Div.classList.add('image');
+                    noImage2Div.textContent = 'No image 2 uploaded';
+                    mediaContainer.appendChild(noImage2Div);
+                }
+            } catch (error) {
+                console.error('Error fetching media:', error);
+            }
+        }
+
+        // Llamar a la función al cargar la página
+        window.onload = fetchMedia;
+    </script>
+</body>
+</html>
