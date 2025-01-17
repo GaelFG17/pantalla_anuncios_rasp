@@ -8,7 +8,8 @@ CORS(app)
 media_content = {
     "video": None,  # Base64 del video
     "image1": None,  # Base64 de la imagen 1
-    "image2": None   # Base64 de la imagen 2
+    "image2": None,   # Base64 de la imagen 2
+    "image3": None
 }
 
 @app.route('/upload', methods=['POST'])
