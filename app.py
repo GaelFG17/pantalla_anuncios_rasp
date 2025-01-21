@@ -12,6 +12,13 @@ media_content = {
     "image3": None
 }
 
+media_content2 = {
+    "video": None,  # Base64 del video
+    "image1": None,  # Base64 de la imagen 1
+    "image2": None,   # Base64 de la imagen 2
+    "image3": None
+}
+
 @app.route('/upload', methods=['POST'])
 def upload():
     data = request.json
@@ -28,7 +35,28 @@ def upload():
     return jsonify({"message": f"Contenido actualizado en '{position}'"}), 200
 
 
+@app.route('/upload2', methods=['POST'])
+def upload():
+    data = request.json
+    if not data or 'position' not in data or 'file' not in data:
+        return jsonify({"error": "Datos inválidos"}), 400
+
+    position = data['position']
+    file_data = data['file']
+
+    if position not in media_content2:
+        return jsonify({"error": f"Posición '{position}' no válida"}), 400
+
+    media_content2[position] = file_data
+    return jsonify({"message": f"Contenido actualizado en '{position}'"}), 200
+
+
 @app.route('/media', methods=['GET'])
+def get_media():
+    return jsonify(media_content)
+
+
+@app.route('/media2', methods=['GET'])
 def get_media():
     return jsonify(media_content)
 
