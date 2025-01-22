@@ -95,19 +95,19 @@
 
     <div class="form-container">
         <form id="uploadForm" enctype="multipart/form-data">
-            <label for="position">Selecciona la pantalla:</label>
+            <label for="position">Selecciona la posición:</label>
             <select id="position" name="position" required>
-                <option value="screen1">Pantalla 1</option>
-                <option value="screen2">Pantalla 2</option>
-                <option value="both">Ambas pantallas</option>
-            </select>
-            <br><br>
-
-            <label for="type">Selecciona el tipo:</label>
-            <select id="type" name="type" required>
                 <option value="image1">Imagen 1</option>
                 <option value="image2">Imagen 2</option>
                 <option value="video">Video</option>
+            </select>
+            <br><br>
+
+            <label for="screen">Selecciona la pantalla:</label>
+            <select id="screen" name="screen" required>
+                <option value="screen1">Pantalla 1</option>
+                <option value="screen2">Pantalla 2</option>
+                <option value="both">Ambas pantallas</option>
             </select>
             <br><br>
 
@@ -138,7 +138,7 @@
     <script>
         function uploadFile() {
             const position = document.getElementById('position').value;
-            const type = document.getElementById('type').value;
+            const screen = document.getElementById('screen').value;
             const fileInput = document.getElementById('fileInput').files[0];
 
             if (!fileInput) {
@@ -164,60 +164,40 @@
                 const base64Data = reader.result.split(',')[1]; // Obtener solo la parte base64
                 const data = {
                     position: position,
-                    type: type,
                     file: base64Data
                 };
 
-                fetch('/upload', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.message) {
-                        alert(result.message);
-                        updateScreenContent(position, type, fileURL, fileType);
-                    } else if (result.error) {
-                        alert(result.error);
-                    }
-                })
-                .catch(error => {
-                    alert('Error al subir el archivo.');
-                    console.error('Error:', error);
-                });
+                if (screen === 'screen1' || screen === 'both') {
+                    sendToEndpoint('/upload1', data);
+                }
+
+                if (screen === 'screen2' || screen === 'both') {
+                    sendToEndpoint('/upload2', data);
+                }
             };
             reader.readAsDataURL(fileInput);
         }
 
-        function updateScreenContent(position, type, fileURL, fileType) {
-            if (position === 'screen1' || position === 'both') {
-                const screen1Content = document.getElementById('screen1Content');
-                appendMedia(screen1Content, fileURL, fileType, type);
-            }
-
-            if (position === 'screen2' || position === 'both') {
-                const screen2Content = document.getElementById('screen2Content');
-                appendMedia(screen2Content, fileURL, fileType, type);
-            }
-        }
-
-        function appendMedia(container, fileURL, fileType, type) {
-            let element;
-
-            if (type === 'video' || fileType.startsWith('video/')) {
-                element = document.createElement('video');
-                element.controls = true;
-            } else {
-                element = document.createElement('img');
-            }
-
-            element.src = fileURL;
-            element.style.maxWidth = '100%';
-            container.innerHTML = '';
-            container.appendChild(element);
+        function sendToEndpoint(endpoint, data) {
+            fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.message) {
+                    alert(result.message);
+                } else if (result.error) {
+                    alert(result.error);
+                }
+            })
+            .catch(error => {
+                alert('Error al subir el archivo.');
+                console.error('Error:', error);
+            });
         }
     </script>
 </body>
