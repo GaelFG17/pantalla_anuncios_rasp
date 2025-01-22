@@ -4,51 +4,135 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subir Contenido Multimedia</title>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1e1e2f, #302a4e);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #ff7eb3, #ff758c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            padding: 20px;
+            background: #2c2c4e;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            margin: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #bbb;
+        }
+
+        input[type="file"], select, button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #444;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #ff7eb3, #ff758c);
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #ff758c, #ff7eb3);
+        }
+
+        .preview-content img, .preview-content video {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            border-radius: 10px;
+        }
+
+        .visualization-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .visualization-box {
+            background: #2c2c4e;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .visualization-content img, .visualization-content video {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
     <h1>Subir Imagen o Video</h1>
 
-    <form id="uploadForm" enctype="multipart/form-data">
-        <label for="position">Selecciona la posición:</label>
-        <select id="position" name="position" required>
-            <option value="screen1">Pantalla 1</option>
-            <option value="screen2">Pantalla 2</option>
-            <option value="both">Ambas pantallas</option>
-        </select>
-        <br><br>
+    <div class="form-container">
+        <form id="uploadForm" enctype="multipart/form-data">
+            <label for="position">Selecciona la pantalla:</label>
+            <select id="position" name="position" required>
+                <option value="screen1">Pantalla 1</option>
+                <option value="screen2">Pantalla 2</option>
+                <option value="both">Ambas pantallas</option>
+            </select>
+            <br><br>
 
-        <label for="fileInput">Selecciona el archivo:</label>
-        <input type="file" id="fileInput" name="fileInput" accept="image/*, video/*" required>
-        <br><br>
+            <label for="type">Selecciona el tipo:</label>
+            <select id="type" name="type" required>
+                <option value="image1">Imagen 1</option>
+                <option value="image2">Imagen 2</option>
+                <option value="video">Video</option>
+            </select>
+            <br><br>
 
-        <label for="type">Selecciona el tipo:</label>
-        <select id="type" name="type" required>
-            <option value="image1">Imagen 1</option>
-            <option value="image2">Imagen 2</option>
-            <option value="video">Video</option>
-        </select>
-        <br><br>
+            <label for="fileInput">Selecciona el archivo:</label>
+            <input type="file" id="fileInput" name="fileInput" accept="image/*, video/*" required>
+            <br><br>
 
-        <button type="button" onclick="uploadFile()">Subir</button>
-    </form>
+            <button type="button" onclick="uploadFile()">Subir</button>
+        </form>
+    </div>
 
     <h2>Vista previa</h2>
-    <div id="previewContent">
+    <div class="preview-content" id="previewContent">
         <!-- Aquí se mostrará la vista previa del contenido cargado -->
     </div>
 
-    <h2>Pantallas</h2>
-    <div id="visualizationScreen1">
-        <h3>Pantalla 1</h3>
-        <div id="screen1Content"></div>
-    </div>
-    <div id="visualizationScreen2">
-        <h3>Pantalla 2</h3>
-        <div id="screen2Content"></div>
-    </div>
-    <div id="visualizationVideo">
-        <h3>Video</h3>
-        <div id="videoContent"></div>
+    <div class="visualization-container">
+        <div class="visualization-box" id="visualizationScreen1">
+            <h3>Pantalla 1</h3>
+            <div class="visualization-content" id="screen1Content"></div>
+        </div>
+        <div class="visualization-box" id="visualizationScreen2">
+            <h3>Pantalla 2</h3>
+            <div class="visualization-content" id="screen2Content"></div>
+        </div>
     </div>
 
     <script>
