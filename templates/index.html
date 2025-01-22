@@ -1,73 +1,264 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subir Contenido Multimedia</title>
+    <title>Subir Videos o Imágenes</title>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1e1e2f, #302a4e);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #ff7eb3, #ff758c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: row; /* Cambiamos el diseño a dos columnas */
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .form-container, .preview-container {
+            flex: 1; /* Distribuye espacio proporcional */
+            padding: 20px;
+            background: #2c2c4e;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #bbb;
+        }
+
+        input[type="file"], select, button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #444;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #ff7eb3, #ff758c);
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #ff758c, #ff7eb3);
+        }
+
+        .preview-content img, .preview-content video {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            border-radius: 10px;
+        }
+
+        .visualization-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .visualization-box {
+            background: #2c2c4e;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .visualization-content img, .visualization-content video {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Subir Imagen o Video</h1>
+    <div class="main-container">
+        <!-- Formulario de carga -->
+        <div class="form-container">
+            <h1>Cargar Videos o Imágenes</h1>
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label for="fileInput">Seleccionar video o imagen:</label>
+                    <input type="file" id="fileInput" name="fileInput" accept="video/*,image/*" required>
+                </div>
+                <div class="form-group">
+                    <label for="screenSelect">Seleccionar pantalla:</label>
+                    <select id="screenSelect" name="screenSelect" required>
+                        <option value="">-- Seleccionar Pantalla --</option>
+                        <option value="screen1">Pantalla 1</option>
+                        <option value="screen2">Pantalla 2</option>
+                        <option value="both">Ambas pantallas</option>
+                    </select>
+                </div>
+                <div id="sectionSelectors" class="form-group"></div>
+                <button type="button" id="uploadButton">SUBIR</button>
+            </form>
+        </div>
 
-    <form id="uploadForm" enctype="multipart/form-data">
-        <label for="position">Selecciona la posición:</label>
-        <select id="position" name="position">
-            <option value="image1">Imagen 1</option>
-            <option value="image2">Imagen 2</option>
-            <option value="image3">Imagen 3</option>
-            <option value="video">Video</option>
-        </select>
-        <br><br>
+        <!-- Vista previa -->
+        <div class="preview-container">
+            <h2>Vista Previa</h2>
+            <div class="preview-content" id="previewContent">
+                <!-- Vista previa dinámica -->
+            </div>
+        </div>
+    </div>
 
-        <label for="fileInput">Selecciona el archivo:</label>
-        <input type="file" id="fileInput" name="fileInput" accept="image/*, video/*" required>
-        <br><br>
-
-        <button type="button" onclick="uploadFile()">Subir</button>
-    </form>
+    <div class="visualization-container">
+        <!-- Pantalla 1 -->
+        <div class="visualization-box" id="visualizationScreen1">
+            <h3>Pantalla 1</h3>
+            <div class="visualization-content" id="screen1Content"></div>
+        </div>
+        <!-- Pantalla 2 -->
+        <div class="visualization-box" id="visualizationScreen2">
+            <h3>Pantalla 2</h3>
+            <div class="visualization-content" id="screen2Content"></div>
+        </div>
+    </div>
 
     <script>
-        function uploadFile() {
-            const formData = new FormData();
-            const position = document.getElementById('position').value;
-            const fileInput = document.getElementById('fileInput').files[0];
+        const fileInput = document.getElementById('fileInput');
+        const previewContent = document.getElementById('previewContent');
+        const uploadButton = document.getElementById('uploadButton');
+        const screenSelect = document.getElementById('screenSelect');
+        const sectionSelectors = document.getElementById('sectionSelectors');
+        const screen1Content = document.getElementById('screen1Content');
+        const screen2Content = document.getElementById('screen2Content');
 
-            if (!fileInput) {
-                alert('Por favor, selecciona un archivo.');
+        // Función para actualizar las opciones de secciones dinámicamente
+        function updateSectionSelector() {
+            const selectedScreen = screenSelect.value;
+            sectionSelectors.innerHTML = ''; // Limpiar opciones de sección
+
+            if (fileInput.files[0] && fileInput.files[0].type.startsWith('video/')) {
+                // Si es un video, solo mostrar la selección de pantalla
                 return;
             }
 
-            // Convertir el archivo a base64
-            const reader = new FileReader();
-            reader.onloadend = function() {
-                const base64Data = reader.result.split(',')[1];  // Obtener solo la parte base64
-                const data = {
-                    position: position,
-                    file: base64Data 
-                };
+            // Si no es un video, mostramos las opciones de sección
+            if (selectedScreen === 'screen1' || selectedScreen === 'screen2') {
+                addSectionSelector(`Seleccionar sección para ${selectedScreen}`);
+            } else if (selectedScreen === 'both') {
+                addSectionSelector('Seleccionar sección para Pantalla 1');
+                addSectionSelector('Seleccionar sección para Pantalla 2');
+            }
+        }
 
-                fetch('/upload', {
+        // Actualizar el selector de sección basado en la pantalla seleccionada
+        screenSelect.addEventListener('change', updateSectionSelector);
+
+        // Función para agregar el selector de sección
+        function addSectionSelector(labelText) {
+            const label = document.createElement('label');
+            label.textContent = labelText;
+
+            const select = document.createElement('select');
+            select.innerHTML = `
+                <option value="">-- Seleccionar Sección --</option>
+                <option value="section1">Sección 1</option>
+                <option value="section2">Sección 2</option>
+            `;
+
+            sectionSelectors.appendChild(label);
+            sectionSelectors.appendChild(select);
+        }
+
+        // Mostrar vista previa al seleccionar un archivo
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+
+            if (!file) return;
+
+            const fileType = file.type;
+            const fileURL = URL.createObjectURL(file);
+            previewContent.innerHTML = '';
+
+            const element = fileType.startsWith('image/') ? document.createElement('img') : document.createElement('video');
+            element.src = fileURL;
+            element.style.maxWidth = '100%';
+            element.style.borderRadius = '10px';
+            if (fileType.startsWith('video/')) {
+                element.controls = true;
+            }
+
+            previewContent.appendChild(element);
+
+            // Actualizar las opciones de pantalla y sección
+            updateSectionSelector();
+        });
+
+        // Manejo de la subida del archivo
+        uploadButton.addEventListener('click', () => {
+            const file = fileInput.files[0];
+            const screen = screenSelect.value;
+
+            if (!file || !screen) {
+                alert("Por favor selecciona un archivo y una pantalla.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function () {
+                const base64 = reader.result.split(',')[1];
+                const endpoint = screen === 'screen1' ? '/upload' : '/upload2';
+
+                fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({
+                        position: 'video', // Cambiar si es necesario para imágenes
+                        file: base64
+                    })
                 })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.message) {
-                        alert(result.message);
-                    } else if (result.error) {
-                        alert(result.error);
-                    }
-                })
-                .catch(error => {
-                    alert('Error al subir el archivo.');
-                    console.error('Error:', error);
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Éxito:', data);
+                        alert("Archivo subido correctamente.");
+                        fileInput.value = '';
+                        previewContent.innerHTML = '';
+                        sectionSelectors.innerHTML = ''; // Limpiar los selectores de sección
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert("Hubo un problema al subir el archivo.");
+                    });
             };
-            reader.readAsDataURL(fileInput);
-        }
+            reader.readAsDataURL(file);
+        });
     </script>
 </body>
-</html>
-
+</ht60ddml>
+xd5f
