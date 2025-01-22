@@ -36,7 +36,7 @@ def upload():
 
 
 @app.route('/upload2', methods=['POST'])
-def upload():
+def upload2():
     data = request.json
     if not data or 'position' not in data or 'file' not in data:
         return jsonify({"error": "Datos inválidos"}), 400
@@ -57,8 +57,8 @@ def get_media():
 
 
 @app.route('/media2', methods=['GET'])
-def get_media():
-    return jsonify(media_content)
+def get_media2():
+    return jsonify(media_content2)
 
 @app.route('/')
 def display_web():
