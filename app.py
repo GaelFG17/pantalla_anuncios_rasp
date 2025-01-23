@@ -22,7 +22,15 @@ media_content2 = {
 @app.route('/upload', methods=['POST'])
 def upload():
     data = request.json
-    if not data or 'position' not in data or 'file' not in data:
+    if not data:
+        return jsonify({"error": "Datos inválidos"}), 400
+
+    if data.get("command") == "limpiar":
+        for key in media_content:
+            media_content[key] = None
+        return jsonify({"message": "Pantalla 1 limpiada exitosamente"}), 200
+
+    if 'position' not in data or 'file' not in data:
         return jsonify({"error": "Datos inválidos"}), 400
 
     position = data['position']
@@ -38,7 +46,15 @@ def upload():
 @app.route('/upload2', methods=['POST'])
 def upload2():
     data = request.json
-    if not data or 'position' not in data or 'file' not in data:
+    if not data:
+        return jsonify({"error": "Datos inválidos"}), 400
+
+    if data.get("command") == "limpiar":
+        for key in media_content2:
+            media_content2[key] = None
+        return jsonify({"message": "Pantalla 2 limpiada exitosamente"}), 200
+
+    if 'position' not in data or 'file' not in data:
         return jsonify({"error": "Datos inválidos"}), 400
 
     position = data['position']
