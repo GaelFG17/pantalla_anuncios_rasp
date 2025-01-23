@@ -203,26 +203,28 @@
 
         function clearScreens() {
             const screen = document.getElementById('screen').value;
-
+            const clearData = { command: "limpiar" };
+        
             if (screen === 'screen1' || screen === 'both') {
                 document.getElementById('screen1Content').innerHTML = '';
-                sendToEndpoint('/upload', {});
+                sendToEndpoint('/upload', clearData);
             }
-
+        
             if (screen === 'screen2' || screen === 'both') {
                 document.getElementById('screen2Content').innerHTML = '';
-                sendToEndpoint('/upload2', {});
+                sendToEndpoint('/upload2', clearData);
             }
-
+        
             if (screen !== 'both') {
                 alert(`Pantalla ${screen === 'screen1' ? '1' : '2'} limpiada exitosamente.`);
             } else {
                 alert('Ambas pantallas limpiadas exitosamente.');
             }
-
+        
             // Limpiar vista previa
             document.getElementById('previewContent').innerHTML = '';
         }
+
     </script>
 </body>
 </html>
