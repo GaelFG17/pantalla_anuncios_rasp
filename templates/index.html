@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subir Contenido Multimediaa</title>
+    <title>Subir Contenido Multimedia</title>
     <style>
         /* Estilos generales */
         body {
@@ -116,6 +116,7 @@
             <br><br>
 
             <button type="button" onclick="uploadFile()">Subir</button>
+            <button type="button" onclick="clearScreens()">Limpiar Pantallas</button>
         </form>
     </div>
 
@@ -198,6 +199,29 @@
                 alert('Error al subir el archivo.');
                 console.error('Error:', error);
             });
+        }
+
+        function clearScreens() {
+            const screen = document.getElementById('screen').value;
+
+            if (screen === 'screen1' || screen === 'both') {
+                document.getElementById('screen1Content').innerHTML = '';
+                sendToEndpoint('/upload', {});
+            }
+
+            if (screen === 'screen2' || screen === 'both') {
+                document.getElementById('screen2Content').innerHTML = '';
+                sendToEndpoint('/upload2', {});
+            }
+
+            if (screen !== 'both') {
+                alert(`Pantalla ${screen === 'screen1' ? '1' : '2'} limpiada exitosamente.`);
+            } else {
+                alert('Ambas pantallas limpiadas exitosamente.');
+            }
+
+            // Limpiar vista previa
+            document.getElementById('previewContent').innerHTML = '';
         }
     </script>
 </body>
